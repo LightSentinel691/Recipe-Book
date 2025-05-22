@@ -1,10 +1,21 @@
 const cards_container = document.querySelector(".Container_cards_body");
+const searchBar = document.getElementById('search_text');
+let debounceTimeout;
 
-
-
-window.onload = function() {
-    fetchData();
+// Debounce function to limit API calls
+function debounce(func, delay) {
+    return (...args) => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => func(...args), delay);
+    };
 }
+
+
+ // Attach event listener with debounce
+searchBar.addEventListener('input', debounce((e) => {
+    cards_container.innerHTML = '';
+      fetchData(e.target.value);
+    }, 300));
 
 
 // Check for the existence of the 'localStorage' object
@@ -54,8 +65,7 @@ function createRecipeCard(image, title, category) {
 
 
 //Cal our Api to get the recipe details
-async function fetchData() {
-    let query = 'mushroom'
+async function fetchData(query) {
     const url = "https://www.themealdb.com/api/json/v1/1/search.php?s=" + encodeURI(query);
     try {
         const response = await fetch(url
